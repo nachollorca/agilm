@@ -1,0 +1,14 @@
+[project]
+name = "easy-lm"
+version = "0.1.0"
+description = "The rest of the standards to inference LMs are sh*t let me show you."
+readme = "README.md"
+authors = [
+    { name = "nachollorca", email = "madwayesp@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = []
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
