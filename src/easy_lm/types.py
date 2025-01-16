@@ -1,10 +1,12 @@
 from dataclasses import asdict, dataclass
+from typing import Optional
 
-
+@dataclass
 class Base:
     """
     Base class providing utility methods for converting to and from dictionaries.
     """
+    @property
     def to_dict(self) -> dict:
         return asdict(self)
 
@@ -42,7 +44,7 @@ class Answer(Base):
     content: str
     tokens_in: int
     tokens_out: int
-    time: float
+    time: Optional[float] = None
 
     @property
     def message(self) -> Message:
@@ -90,4 +92,4 @@ class Model(Base):
     """
     provider: str
     id: str
-    locations: list[str]
+    locations: Optional[list[str]] = None
