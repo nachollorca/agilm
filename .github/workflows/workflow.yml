@@ -3,7 +3,7 @@ name: full-workflow
 on: [push]
 
 concurrency:
-  group: {% raw %} ${{ github.workflow }}-${{ github.ref }} {% endraw %}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 env:
