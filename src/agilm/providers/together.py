@@ -5,9 +5,10 @@ from ..types import Answer, Message, Model
 
 def get_answer(model: Model, conversation: list[Message], **kwargs) -> Answer:
     client = Together()
+    messages = [message.to_dict for message in conversation]
     response = client.chat.completions.create(
         model=model.id,
-        messages=[message.to_dict for message in conversation],
+        messages=messages,
         **kwargs
     )
     return Answer(
