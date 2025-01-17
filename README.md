@@ -6,4 +6,5 @@ I despise with **pasion**:
 - LiteLLM
 
 So this is how it should actually be done. You are welcome.
+
 ![Standards](assets/standards.png)
