@@ -3,7 +3,7 @@ from together import Together
 from ..types import Answer, Message, Model
 
 
-def _get_answer(model: Model, conversation: list[Message], **kwargs) -> Answer:
+def get_answer(model: Model, conversation: list[Message], **kwargs) -> Answer:
     client = Together()
     response = client.chat.completions.create(
         model=model.id,
