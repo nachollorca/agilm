@@ -1,9 +1,15 @@
-from together import Together
+from together import Together as Together_source
+
 from ..types import Answer, Message, Model, Provider
 
-class TogetherProvider(Provider):
+
+class Together(Provider):
+    model_ids = [
+        "deepseek-ai/DeepSeek-V3"
+    ]
+    
     def get_answer(self, model: Model, conversation: list[Message], **kwargs) -> Answer:
-        client = Together()
+        client = Together_source()
         messages = [message.dict for message in conversation]
         response = client.chat.completions.create(
             model=model.id,
