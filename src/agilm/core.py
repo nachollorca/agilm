@@ -1,9 +1,10 @@
-"""Contains main functions to interact with LLM APIs."""
+"""Contains main functions exposed to the user to interact with LLM APIs."""
 
 from importlib import import_module
 from time import time
 
 from .types import Answer, Message, Model
+
 
 def get_answer(model: Model, conversation: list[Message], **kwargs) -> Answer:
     """
@@ -19,7 +20,7 @@ def get_answer(model: Model, conversation: list[Message], **kwargs) -> Answer:
     """
     start = time()
     module = import_module(f"agilm.providers.{model.provider}")
-    provider = getattr(module, f"{model.provider.capitalize()}Provider")
+    provider = getattr(module, f"{model.provider.capitalize()}")
     answer = provider().get_answer(model=model, conversation=conversation, **kwargs)
     answer.time = round(time() - start, 3)
     return answer
