@@ -7,6 +7,8 @@ from importlib import import_module
 from pathlib import Path
 from typing import Optional
 
+from .utils import list_to_enum
+
 
 @dataclass
 class Base:
@@ -96,35 +98,46 @@ class Model(Base):
     Attributes:
         provider (str): The provider of the language model (e.g., "OpenAI", "Anthropic").
         id (str): The unique identifier of the language model.
-        locations (list[str]): A list of locations where the model is available.
+        locations (list[str]): A list of host locations to randomly pick from.
     """
     provider: str
     id: str
     locations: Optional[list[str]] = None
 
     def __post_init__(self):
+        """Checks whether the combination of provider, id and locations is valid."""
         # check if provider is supported
         self.provider = self.provider.lower()
         dir = Path(__file__).parent.resolve()
+        # ToDo: make providers an Enum too?
         providers = [provider.split(".")[0] for provider in os.listdir(f"{dir}/providers") if provider.endswith(".py")]
         if self.provider not in providers:
             raise ValueError(f"Provider {self.provider} is not supported: {providers}.")
         
+        # check if model_id is supported
+        module = import_module(f"agilm.providers.{self.provider}")
+        provider = getattr(module, f"{self.provider.capitalize()}")()
+        if self.id not in provider.model_ids:
+            raise ValueError(f"Provider {self.provider} does not support model {self.id}: {provider.model_ids}")
+        
         # check if locations are supported
         if self.locations:
             module = import_module(f"agilm.providers.{self.provider}")
-            provider = getattr(module, f"{self.provider.capitalize()}Provider")
-            provider_locations = provider().locations
-            if not provider_locations:
+            if not provider.locations:
                 raise ValueError(f"Provider {self.provider} does not support `locations`.")
             for location in self.locations:
-                if location not in provider_locations:
-                    raise ValueError(f"Location {location} not supported for {self.provider}: {provider_locations}")
+                if location not in provider.locations:
+                    raise ValueError(f"Provider {self.provider} does not support location {location}: {provider.locations}")
 
 
 class Provider(ABC):
-    """Abstract class defining the interface of providers."""
-    locations: Optional[list] = None
+    """Abstract class defining the shared interface for API providers."""
+    model_ids: list[str]
+    locations: Optional[list[str]] = None
+    
+    def __init__(self):
+        self.model_ids = list_to_enum(self.model_ids) if self.model_ids else None
+        self.locations = list_to_enum(self.locations) if self.locations else None
 
     @abstractmethod
     def get_answer(self, model: Model, conversation: list[Message], **kwargs) -> Answer:

@@ -2,6 +2,7 @@
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any, Callable
+from enum import Enum
 
 
 def _run_batch(
@@ -29,3 +30,8 @@ def _run_batch(
             index = futures_to_indices[future]
             results[index] = future.result()
     return results
+
+def list_to_enum(lst: list[str]) -> Enum:
+    """Turns a list of strings ids into an Enum."""
+    enum_members = {model_id.upper().replace('-', '_').replace(".", "_"): model_id for model_id in lst}
+    return Enum("ModelID", enum_members)
