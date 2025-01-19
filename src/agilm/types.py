@@ -109,7 +109,7 @@ class Model(Base):
         # check if provider is supported
         self.provider = self.provider.lower()
         dir = Path(__file__).parent.resolve()
-        # ToDo: make providers an Enum too?
+        # ToDo: make providers an Enum so user can access with `providers.`
         providers = [provider.split(".")[0] for provider in os.listdir(f"{dir}/providers") if provider.endswith(".py")]
         if self.provider not in providers:
             raise ValueError(f"Provider {self.provider} is not supported: {providers}.")
@@ -118,7 +118,7 @@ class Model(Base):
         module = import_module(f"agilm.providers.{self.provider}")
         provider = getattr(module, f"{self.provider.capitalize()}")()
         if self.id not in provider.model_ids:
-            raise ValueError(f"Provider {self.provider} does not support model {self.id}: {provider.model_ids}")
+            raise ValueError(f"Provider {self.provider} does not support model {self.id}: {provider.model_ids}") # ToDo: warn instead of raise
         
         # check if locations are supported
         if self.locations:
