@@ -5,6 +5,7 @@ from ..types import Answer, Message, Model, Provider
 
 class Anthropic(Provider):
     model_ids = ["claude-3-5-sonnet-latest", "claude-3-5-haiku-latest", "claude-3-haiku-20240307"]
+    env_vars = ["ANTHROPIC_API_KEY"]
 
     def get_answer(self, model: Model, conversation: list[Message], **kwargs) -> Answer:
         client = Anthropic_source()

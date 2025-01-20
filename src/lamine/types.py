@@ -1,10 +1,12 @@
 """Contains all types defined to represent interactions with LLM APIs. Utility parent types are defined in .utils"""
 
 import logging
+import os
 from abc import ABC, abstractmethod
 from dataclasses import asdict, dataclass
 from importlib import import_module
 from typing import Optional
+from dotenv import load_dotenv
 
 from .providers import PROVIDER_IDS
 
@@ -113,18 +115,26 @@ class Model(Base):
 
     def __post_init__(self):
         """Checks whether the combination of provider, id and locations is valid."""
-        # Crash if provider is not supported
+        # crash if provider is not supported
         self.provider = self.provider.lower()
         if self.provider not in PROVIDER_IDS:
             raise ValueError(f"Provider {self.provider} is not supported: {PROVIDER_IDS}.")
 
-        # Warn if model_id is not supported
+        # load provider for further checks
         module = import_module(f"lamine.providers.{self.provider}")
         provider = getattr(module, f"{self.provider.capitalize()}")()
+
+        # crash if env vars are not set
+        load_dotenv()
+        for env_var in provider.env_vars:
+            if not os.getenv(env_var):
+                raise EnvironmentError(f"Provider {self.provider} requires environmental variable {env_var}")
+
+        # warn if model_id is not supported
         if self.id not in provider.model_ids:
             logging.warning(f"Provider {self.provider} does not support model {self.id}: {provider.model_ids}")
 
-        # Warn if locations are not supported
+        # warn if locations are not supported
         if self.locations:
             module = import_module(f"lamine.providers.{self.provider}")
             if not provider.locations:
@@ -142,13 +152,20 @@ class Provider(ABC):
     Abstract class defining the shared interface for API providers.
 
     Attributes:
-        model_ids (list[str]): a list of valid model ids supported by the provider, e.g. "gemini-2-flash".
-        locations (list[str]): a list of valid locations where the provider is hosts LMs, e.g. "eu-central1".
+        model_ids (Optional[list[str]]): a list of valid model ids supported by the provider, e.g. "gemini-2-flash".
+        locations (Optional[list[str]]): a list of valid locations where the provider is hosts LMs, e.g. "eu-central1".
             This generally applies only to provideders Vertex, Bedrock and Azure.
+        env_vars (Optional[list[str]]): a list of environmental variables (API Keys) that should exist to query the provider.
     """
 
-    model_ids: list[str]
+    model_ids: Optional[list[str]] = None
     locations: Optional[list[str]] = None
+    env_vars: Optional[list[str]] = None
+
+    def __init__(self):
+        self.model_ids = [] if not self.model_ids else self.model_ids
+        self.locations = [] if not self.locations else self.locations
+        self.env_vars = [] if not self.env_vars else self.env_vars
 
     @abstractmethod
     def get_answer(self, model: Model, conversation: list[Message], **kwargs) -> Answer:
