@@ -3,9 +3,6 @@ repos:
     rev: v4.6.0
     hooks:
       - id: no-commit-to-branch
-      - id: trailing-whitespace
-      - id: end-of-file-fixer
-        exclude: .*jinja$
       - id: pretty-format-json
         args: [--autofix, --indent=4, --no-ensure-ascii]
 
