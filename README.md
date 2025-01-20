@@ -8,3 +8,5 @@ I despise with **pasion**:
 So this is how it should actually be done. You are welcome.
 
 ![Standards](assets/standards.png)
+
+For user manual see [HOW-TO.ipynb](HOW-TO.ipynb)
