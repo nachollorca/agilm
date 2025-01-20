@@ -4,7 +4,7 @@ from ..types import Answer, Message, Model, Provider
 
 
 class Together(Provider):
-    model_ids = ["deepseek-ai/DeepSeek-V3"]
+    model_ids = ["deepseek-ai/DeepSeek-V3", "meta-llama/Llama-3-8b-chat-hf"]
     env_vars = ["TOGETHER_API_KEY"]
 
     def get_answer(self, model: Model, conversation: list[Message], **kwargs) -> Answer:
