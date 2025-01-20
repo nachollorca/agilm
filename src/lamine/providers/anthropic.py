@@ -4,18 +4,12 @@ from ..types import Answer, Message, Model, Provider
 
 
 class Anthropic(Provider):
-    model_ids = [
-        "claude-3.5-sonnet-latest",
-        "claude-3-5-haiku-latest",
-        "claude-3-haiku-20240307"
-    ]
+    model_ids = ["claude-3-5-sonnet-latest", "claude-3-5-haiku-latest", "claude-3-haiku-20240307"]
 
     def get_answer(self, model: Model, conversation: list[Message], **kwargs) -> Answer:
         client = Anthropic_source()
         messages = [message.dict for message in conversation]
-        response = client.messages.create(
-            model=model.id, messages=messages, max_tokens=4096, **kwargs
-        )
+        response = client.messages.create(model=model.id, messages=messages, max_tokens=4096, **kwargs)
         return Answer(
             content=response.content[0].text,
             tokens_in=response.usage.input_tokens,
