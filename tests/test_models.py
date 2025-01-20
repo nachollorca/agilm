@@ -29,7 +29,7 @@ def test_invalid_location_for_provider():
 def test_unsupported_provider():
     with pytest.raises(ValueError) as excinfo:
         Model(provider="unsupported-provider", id="model-id")
-    assert str(excinfo.value).startswith("Provider unsupported-provider is not supported:")
+    assert str(excinfo.value).startswith("Provider 'unsupported-provider' is not supported:")
 
 
 def test_invalid_location_for_vertex_provider():
