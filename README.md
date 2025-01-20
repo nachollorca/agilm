@@ -1,4 +1,4 @@
-A *LA*nguage *M*odel *IN*terface *E*nginee as god intended, because the rest of the standards to inference LM APIs are sh*t.
+A **LA**nguage **M**odel **IN**terface **E**nginee as god intended, because the rest of the standards to inference LM APIs are :shit:.
 
 I despise with **pasion**:
 - The fact that each provider uses a different spec for LLM requests
