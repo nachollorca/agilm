@@ -15,4 +15,5 @@ class Anthropic(Provider):
             content=response.content[0].text,
             tokens_in=response.usage.input_tokens,
             tokens_out=response.usage.output_tokens,
+            source=response,
         )

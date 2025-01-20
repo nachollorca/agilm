@@ -5,7 +5,7 @@ import os
 from abc import ABC, abstractmethod
 from dataclasses import asdict, dataclass
 from importlib import import_module
-from typing import Optional
+from typing import Optional, Any
 from dotenv import load_dotenv
 
 from .providers import PROVIDER_IDS
@@ -51,12 +51,14 @@ class Answer(Base):
         content (str): The content of the answer.
         tokens_in (int): The number of input tokens used to generate the answer.
         tokens_out (int): The number of output tokens generated in the answer.
+        source (Any): The original object returned by the API.
         time (float): The time taken to generate the answer in seconds.
     """
 
     content: str
     tokens_in: int
     tokens_out: int
+    source: Any
     time: Optional[float] = None
 
     @property
@@ -118,7 +120,7 @@ class Model(Base):
         # crash if provider is not supported
         self.provider = self.provider.lower()
         if self.provider not in PROVIDER_IDS:
-            raise ValueError(f"Provider {self.provider} is not supported: {PROVIDER_IDS}.")
+            raise ValueError(f"Provider '{self.provider}' is not supported: {PROVIDER_IDS}.")
 
         # load provider for further checks
         module = import_module(f"lamine.providers.{self.provider}")
@@ -128,22 +130,22 @@ class Model(Base):
         load_dotenv()
         for env_var in provider.env_vars:
             if not os.getenv(env_var):
-                raise EnvironmentError(f"Provider {self.provider} requires environmental variable {env_var}")
+                raise EnvironmentError(f"Provider '{self.provider}' requires environmental variable '{env_var}'")
 
         # warn if model_id is not supported
         if self.id not in provider.model_ids:
-            logging.warning(f"Provider {self.provider} does not support model {self.id}: {provider.model_ids}")
+            logging.warning(f"Provider '{self.provider}' does not support model '{self.id}': {provider.model_ids}")
 
         # warn if locations are not supported
         if self.locations:
             module = import_module(f"lamine.providers.{self.provider}")
             if not provider.locations:
-                logging.warning(f"Provider {self.provider} does not support `locations`.")
+                logging.warning(f"Provider '{self.provider}' does not support 'locations'.")
             else:
                 for location in self.locations:
                     if location not in provider.locations:
                         logging.warning(
-                            f"Provider {self.provider} does not support location {location}: {provider.locations}"
+                            f"Provider '{self.provider}' does not support location '{location}': {provider.locations}"
                         )
 
 
