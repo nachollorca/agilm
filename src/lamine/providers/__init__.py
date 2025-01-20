@@ -1,7 +1,8 @@
-from pathlib import Path
 import os
-from ..utils import BaseEnum
 
-dir = Path(__file__).parent.resolve()
-provider_ids = [provider.split(".")[0] for provider in os.listdir(f"{dir}") if provider.endswith(".py")]
-PROVIDERS = BaseEnum.from_list(name="providers", lst=provider_ids)
+dir = os.path.dirname(os.path.abspath(__file__))
+PROVIDER_IDS = list()
+for script in os.listdir(dir):
+    file_name, extension = os.path.splitext(script)
+    if not file_name.startswith("_") and extension == ".py":
+        PROVIDER_IDS.append(file_name)

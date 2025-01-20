@@ -20,8 +20,8 @@ def get_answer(model: Model, conversation: list[Message], **kwargs) -> Answer:
     """
     start = time()
     module = import_module(f"lamine.providers.{model.provider}")
-    provider = getattr(module, f"{model.provider.capitalize()}")
-    answer = provider().get_answer(model=model, conversation=conversation, **kwargs)
+    provider = getattr(module, f"{model.provider.capitalize()}")()
+    answer = provider.get_answer(model=model, conversation=conversation, **kwargs)
     answer.time = round(time() - start, 3)
     return answer
 
