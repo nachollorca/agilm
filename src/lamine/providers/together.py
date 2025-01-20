@@ -15,4 +15,5 @@ class Together(Provider):
             content=response.choices[0].message.content,
             tokens_in=response.usage.prompt_tokens,
             tokens_out=response.usage.completion_tokens,
+            source=response,
         )
