@@ -9,10 +9,10 @@ class Anthropic(Provider):
 
     def get_answer(self, model: Model, conversation: list[Message], **kwargs) -> Answer:
         client = Anthropic_source()
-        messages = [message.dict for message in conversation]
-        response = client.messages.create(model=model.id, messages=messages, max_tokens=4096, **kwargs)
+        messages = [message.to_dict for message in conversation]
+        response = client.messages.create(model=model.id, messages=messages, max_tokens=4096, **kwargs)  # type: ignore
         return Answer(
-            content=response.content[0].text,
+            content=response.content[0].text,  # type: ignore
             tokens_in=response.usage.input_tokens,
             tokens_out=response.usage.output_tokens,
             source=response,

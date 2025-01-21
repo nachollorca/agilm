@@ -17,15 +17,15 @@ class _Base:
     """Base class providing utility methods for other dataclasses."""
 
     @property
-    def dict(self) -> dict:
+    def to_dict(self) -> dict:
         return asdict(self)
 
     @classmethod
-    def from_dict(cls, data: dict):  # type: ignore
+    def from_dict(cls, data: dict):
         return cls(**data)
 
     @property
-    def str(self) -> str:
+    def to_str(self) -> str:
         return ""
 
 
@@ -63,13 +63,7 @@ class Answer(_Base):
     time: Optional[float] = None
 
     @property
-    def message(self) -> Message:
-        """
-        Converts the answer to a Message object with the role "assistant".
-
-        Returns:
-            Message: A Message object representing the answer.
-        """
+    def to_message(self) -> Message:
         return Message("assistant", self.content)
 
 

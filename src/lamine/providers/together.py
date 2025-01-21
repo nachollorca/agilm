@@ -9,7 +9,7 @@ class Together(Provider):
 
     def get_answer(self, model: Model, conversation: list[Message], **kwargs) -> Answer:
         client = Together_source()
-        messages = [message.dict for message in conversation]
+        messages = [message.to_dict for message in conversation]
         response = client.chat.completions.create(model=model.id, messages=messages, **kwargs)
         return Answer(
             content=response.choices[0].message.content,
