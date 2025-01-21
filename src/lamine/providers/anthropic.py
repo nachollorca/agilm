@@ -1,6 +1,7 @@
 from anthropic import Anthropic as Anthropic_source
 
-from ..datatypes import Answer, Message, Model, Provider
+from ..datatypes import Answer, Message, Model
+from . import Provider
 
 
 class Anthropic(Provider):

@@ -1,4 +1,4 @@
-from lamine.datatypes import Provider
+from . import Provider
 
 
 class Mock(Provider):

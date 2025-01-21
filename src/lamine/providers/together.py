@@ -1,6 +1,7 @@
 from together import Together as Together_source
 
-from ..datatypes import Answer, Message, Model, Provider
+from ..datatypes import Answer, Message, Model
+from . import Provider
 
 
 class Together(Provider):

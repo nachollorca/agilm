@@ -3,6 +3,7 @@
 import logging
 import re
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
 from typing import Any, Callable
 
 
@@ -64,3 +65,12 @@ def parse_xml(tag: str, string: str) -> list[str]:
         return []
 
     return [match.strip() for match in matches]
+
+
+def is_valid_provider(provider_id: str) -> bool:
+    dir = Path(f"{Path(__file__).parent}/providers")
+    for file in dir.iterdir():
+        if file.is_file() and not file.name.startswith("_") and file.suffix == ".py":
+            if provider_id == file.stem:
+                return True
+    return False
