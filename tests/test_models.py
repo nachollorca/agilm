@@ -1,29 +1,8 @@
+import os
+
 import pytest
+
 from lamine.types import Model
-
-
-def test_valid_provider_no_locations():
-    model = Model(provider="anthropic", id="claude-3.5-sonnet-latest")
-    assert model.provider == "anthropic"
-    assert model.locations is None
-
-
-def test_valid_provider_with_supported_locations():
-    model = Model(provider="vertex", id="gemini-1.5-flash-002", locations=["us-central1"])
-    assert model.provider == "vertex"
-    assert model.locations == ["us-central1"]
-
-
-def test_valid_provider_with_multiple_supported_locations():
-    model = Model(provider="vertex", id="gemini-1.5-flash-002", locations=["us-central1", "eu-central1"])
-    assert model.provider == "vertex"
-    assert model.locations == ["us-central1", "eu-central1"]
-
-
-def test_invalid_location_for_provider():
-    model = Model(provider="anthropic", id="claude-3.5-sonnet-latest", locations=["us-central1"])
-    assert model
-    # assert "Provider anthropic does not support `locations`." in caplog.text
 
 
 def test_unsupported_provider():
@@ -32,19 +11,36 @@ def test_unsupported_provider():
     assert str(excinfo.value).startswith("Provider 'unsupported-provider' is not supported:")
 
 
-def test_invalid_location_for_vertex_provider():
-    model = Model(provider="vertex", id="gemini-2-flash", locations=["invalid-location"])
-    assert model
-    # assert "Provider vertex does not support location invalid-location:" in caplog.text
+def test_false_env_vars():
+    if os.getenv("var1"):
+        del os.environ["var1"]
+    with pytest.raises(EnvironmentError) as excinfo:
+        Model("mock", "model1")
+    assert str(excinfo.value) == "Provider 'mock' requires environmental variable 'var1'"
 
 
-def test_valid_model_id_for_vertex_provider():
-    model = Model(provider="vertex", id="gemini-1.5-pro-002")
-    assert model.provider == "vertex"
-    assert model.id == "gemini-1.5-pro-002"
+def test_correct_env_vars():
+    os.environ["var1"] = "mock"
+    model = Model("mock", "model1")
+    assert model.provider == "mock"
 
 
-def test_invalid_model_id_for_vertex_provider():
-    model = Model(provider="vertex", id="invalid-model-id")
-    assert model
-    # assert "Provider vertex does not support model invalid-model-id:" in caplog.text
+def test_valid_model():
+    model = Model(provider="mock", id="model1")
+    assert model.provider == "mock"
+    assert model.id == "model1"
+
+
+def test_invalid_model():
+    Model(provider="mock", id="invalid-model")
+    # assert "Provider 'mock' does not support model 'invalid-model'"
+
+
+def test_valid_locations():
+    model = Model(provider="mock", id="model1", locations=["location1"])
+    assert model.locations == ["location1"]
+
+
+def test_invalid_locations():
+    Model(provider="mock", id="invalid-model", locations=["location3"])
+    # assert "Provider 'mock' does not support model 'location3'"
