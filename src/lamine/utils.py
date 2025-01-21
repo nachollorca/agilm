@@ -1,5 +1,7 @@
 """Contains utility clases and functions for the core modules."""
 
+import logging
+import re
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any, Callable
 
@@ -37,3 +39,28 @@ def run_in_parallel(function: Callable, params_list: list[dict[str, Any]], max_w
             index = futures_to_indices[future]
             results[index] = future.result()
     return results
+
+
+def parse_xml(tag: str, string: str) -> list[str]:
+    """
+    Parses and extracts content within specified XML tags from a given string.
+
+    Args:
+        tag (str): The name of the XML tag to match.
+        string (str): The input string containing the XML content.
+
+    Returns:
+        list[str]: A list of strings containing the matched content. If no matches are found, an empty list is returned.
+    """
+    matches = re.findall(
+        pattern=f"<{tag}>(.*?)</{tag}>",
+        string=string,
+        flags=re.DOTALL,
+    )
+
+    if len(matches) == 0:
+        details = "f<{tag}> could not be matched"
+        logging.warning(details)
+        return []
+
+    return [match.strip() for match in matches]

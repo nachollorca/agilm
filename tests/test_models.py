@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from lamine.types import Model
+from lamine.datatypes import Model
 
 
 def test_unsupported_provider():

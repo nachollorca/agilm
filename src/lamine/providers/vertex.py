@@ -3,7 +3,7 @@ import random
 import vertexai as vertexai_source
 from vertexai.generative_models import Content, GenerativeModel, Part
 
-from ..types import Answer, Message, Model, Provider
+from ..datatypes import Answer, Message, Model, Provider
 
 
 class Vertex(Provider):

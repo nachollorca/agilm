@@ -3,7 +3,7 @@
 from importlib import import_module
 from time import time
 
-from .types import Answer, Message, Model
+from .datatypes import Answer, Message, Model
 from .utils import run_in_parallel
 
 
