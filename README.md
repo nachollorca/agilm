@@ -1,6 +1,6 @@
 A **LA**nguage **M**odel **IN**terface **E**nginee as god intended, because the rest of the standards to inference LM APIs are :shit:.
 
-I despise with **pasion**:
+I despise with **utter pasion**:
 - The fact that each provider uses a different spec for LLM requests
 - The OpenAI spec in particular
 - LiteLLM wacky codebase
