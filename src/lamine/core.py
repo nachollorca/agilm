@@ -6,7 +6,7 @@ from importlib import import_module
 from time import time
 
 from .datatypes import Answer, Message, Model, _Model
-from .utils import run_in_parallel
+from .utils import parallelize_function, return_if_exception
 
 
 def get_answer(model: Model, conversation: list[Message], **kwargs) -> Answer:  # type: ignore
@@ -47,12 +47,9 @@ def get_answer(model: Model, conversation: list[Message], **kwargs) -> Answer:  
                 raise
 
 
-def _get_answer_return_error(*args, **kwargs) -> Answer | Exception:
-    """Tries to get an answer and returns the error if failure, instead of crashing"""
-    try:
-        return get_answer(*args, **kwargs)
-    except Exception as e:
-        return e
+@return_if_exception
+def _get_answer(*args, **kwargs):
+    return get_answer(*args, **kwargs)
 
 
 def get_answers(model: Model, conversations: list[list[Message]], **kwargs) -> list[Answer | Exception]:
@@ -70,4 +67,4 @@ def get_answers(model: Model, conversations: list[list[Message]], **kwargs) -> l
     params_list = []
     for conversation in conversations:
         params_list.append({"model": model, "conversation": conversation, "**kwargs": kwargs})
-    return run_in_parallel(function=_get_answer_return_error, params_list=params_list)
+    return parallelize_function(function=_get_answer, params_list=params_list)
