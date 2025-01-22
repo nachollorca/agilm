@@ -1,11 +1,11 @@
 """Contains main functions exposed to the user to interact with LLM APIs."""
 
-import logging
-import random
 from importlib import import_module
+from random import shuffle
 from time import time
 
 from .datatypes import Answer, Message, Model, _Model
+from .logger import LOGGER
 from .utils import parallelize_function, return_if_exception
 
 
@@ -28,7 +28,7 @@ def get_answer(model: Model, conversation: list[Message], **kwargs) -> Answer:  
     # make queryable _Model(s)
     if model.locations:
         models = [_Model(model.provider, model.id, loc) for loc in model.locations]
-        random.shuffle(models)
+        shuffle(models)
     else:
         models = [_Model(model.provider, model.id)]
 
@@ -38,12 +38,12 @@ def get_answer(model: Model, conversation: list[Message], **kwargs) -> Answer:  
             start = time()
             answer = provider.get_answer(model=m, conversation=conversation, **kwargs)
             answer.time = round(time() - start, 3)
-            logging.info(f"Request to '{m.to_str}' succeeded")
+            LOGGER.info(f"Request to '{m.to_str}' succeeded.")
             return answer
         except Exception as e:
-            logging.error(f"Request to '{m.to_str}' failed: '{e}'")
+            LOGGER.warning(f"Request to '{m.to_str}' failed: '{e}'")
             if i == len(models) - 1 and len(models) > 1:  # last model
-                logging.error("All locations failed to respond.")
+                LOGGER.error("All locations failed to respond.")
                 raise
 
 

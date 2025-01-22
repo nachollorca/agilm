@@ -1,11 +1,11 @@
 """Contains all types defined to represent interactions with LLM APIs. Utility parent types are defined in .utils"""
 
-import logging
 import os
 from dataclasses import asdict, dataclass
 from importlib import import_module
 from pathlib import Path
 from typing import Any, Optional
+from .logger import LOGGER
 
 
 @dataclass
@@ -100,17 +100,17 @@ class Model(_Base):
 
         # warn if model_id is not supported
         if self.id not in provider.model_ids:
-            logging.warning(f"Provider '{self.provider}' does not support model '{self.id}': {provider.model_ids}")
+            LOGGER.warning(f"Provider '{self.provider}' does not support model '{self.id}': {provider.model_ids}")
 
         # warn if locations are not supported, make empty list if no locations
         if self.locations:
             module = import_module(f"lamine.providers.{self.provider}")
             if not provider.locations:
-                logging.warning(f"Provider '{self.provider}' does not support 'locations'.")
+                LOGGER.warning(f"Provider '{self.provider}' does not support 'locations'.")
             else:
                 for location in self.locations:
                     if location not in provider.locations:
-                        logging.warning(
+                        LOGGER.warning(
                             f"Provider '{self.provider}' does not support location '{location}': {provider.locations}"
                         )
         else:
