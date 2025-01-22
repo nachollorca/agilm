@@ -1,14 +1,12 @@
-import random
-
 import vertexai as vertexai_source
 from vertexai.generative_models import Content, GenerativeModel, Part
 
-from ..datatypes import Answer, Message, Model
+from ..datatypes import Answer, Message, _Model
 from . import Provider
 
 
 class Vertex(Provider):
-    model_ids = ["gemini-1.5-flash-002", "gemini-1.5-pro-002", "gemini-2.0-flash"]
+    model_ids = ["gemini-1.5-flash-002", "gemini-1.5-pro-002", "gemini-2.0-flash-exp"]
     locations = [
         "europe-central2",
         "europe-north1",
@@ -25,12 +23,10 @@ class Vertex(Provider):
     ]
     env_vars = ["GOOGLE_APPLICATION_CREDENTIALS"]
 
-    def get_answer(self, model: Model, conversation: list[Message], **kwargs) -> Answer:
+    def get_answer(self, model: _Model, conversation: list[Message], **kwargs) -> Answer:
         contents = [Content(role=message.role, parts=[Part.from_text(message.content)]) for message in conversation]
-        if model.locations:
-            location = random.choice(model.locations)
-            vertexai_source.init(location=location)
-            print(f"Querying 'vertex' server in location '{location}'")
+        if model.location:
+            vertexai_source.init(location=model.location)
         client = GenerativeModel(model.id)
         response = client.generate_content(contents=contents)
         return Answer(

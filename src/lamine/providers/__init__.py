@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from ..datatypes import Answer, Message, Model
+from ..datatypes import Answer, Message, _Model
 
 
 class Provider(ABC):
@@ -25,7 +25,7 @@ class Provider(ABC):
         self.env_vars = [] if not self.env_vars else self.env_vars
 
     @abstractmethod
-    def get_answer(self, model: Model, conversation: list[Message], **kwargs) -> Answer:
+    def get_answer(self, model: _Model, conversation: list[Message], **kwargs) -> Answer:
         """
         Requests a response from a language model API for a single conversation.
 

@@ -64,10 +64,12 @@ class Model(_Base):
     """
     Represents a language model.
 
+    The combination of provider, model_id and locations is validated.
+
     Attributes:
         provider (str): The provider of the language model (e.g., "OpenAI", "Anthropic").
         id (str): The unique identifier of the language model.
-        locations (list[str]): A list of host locations to randomly pick from.
+        locations (Optional[list[str]]): A list of host locations to randomly pick from.
     """
 
     provider: str
@@ -100,7 +102,7 @@ class Model(_Base):
         if self.id not in provider.model_ids:
             logging.warning(f"Provider '{self.provider}' does not support model '{self.id}': {provider.model_ids}")
 
-        # warn if locations are not supported
+        # warn if locations are not supported, make empty list if no locations
         if self.locations:
             module = import_module(f"lamine.providers.{self.provider}")
             if not provider.locations:
@@ -111,6 +113,34 @@ class Model(_Base):
                         logging.warning(
                             f"Provider '{self.provider}' does not support location '{location}': {provider.locations}"
                         )
+        else:
+            self.locations = []
+
+
+@dataclass
+class _Model(_Base):
+    """
+    Represents a LM, pointing to a single location (or non at all).
+
+    The combination of provider / model_id and location is assumed to be pre-validated.
+    This is a helper class and is not meant to be used. The corresponding modules will create
+    the necessary _Model instances from a validated Model object given.
+
+    Attributes:
+        provider (str): The provider of the language model (e.g., "OpenAI", "Anthropic").
+        id (str): The unique identifier of the language model.
+        location (Optional[str]): A list of host locations to randomly pick from.
+    """
+
+    provider: str
+    id: str
+    location: Optional[str] = ""
+
+    @property
+    def to_str(self) -> str:
+        if self.location:
+            return f"{self.provider}:{self.id}@{self.location}"
+        return f"{self.provider}:{self.id}"
 
 
 @dataclass
